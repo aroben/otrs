@@ -533,6 +533,18 @@ sub TicketCreate {
         UserID => $Param{UserID},
     );
 
+    # all additional events should be fired *after* the TicketCreate event
+    # to keep the order right
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Service') && $Param{ServiceID} ) {
+        $Self->EventHandler(
+            Event => 'TicketServiceUpdate',
+            Data  => {
+                TicketID => $TicketID,
+            },
+            UserID => $Param{UserID},
+        );
+    }
+
     return $TicketID;
 }
 
